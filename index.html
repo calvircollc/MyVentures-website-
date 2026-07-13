@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calvir & Co. — Valet Trash Service</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-void:#0A0A0B;
+    --bg-surface:#17171A;
+    --bg-elevated:#1E1E22;
+    --border-line:#2A2A2E;
+    --text-primary:#F2F0EA;
+    --text-secondary:#94949A;
+    --text-muted:#5C5C61;
+    --gold:#C9A961;
+    --gold-bright:#E8CD8A;
+    --gold-dim: rgba(201,169,97,0.15);
+    --radius:2px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg-void);
+    color:var(--text-primary);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  h1,h2,h3{font-family:'Fraunces',serif;font-weight:500;letter-spacing:-0.01em;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px;}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    background:rgba(10,10,11,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border-line);
+  }
+  .nav-inner{
+    max-width:1100px;margin:0 auto;padding:18px 24px;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .logo{font-family:'Fraunces',serif;font-size:1.3rem;letter-spacing:0.02em;}
+  .logo span{color:var(--gold);}
+  .nav-links{display:flex;gap:36px;font-size:0.9rem;color:var(--text-secondary);}
+  .nav-links a{transition:color 0.25s;}
+  .nav-links a:hover{color:var(--gold);}
+  .nav-cta{
+    border:1px solid var(--gold);color:var(--gold);
+    padding:9px 20px;font-size:0.85rem;transition:all 0.25s;
+  }
+  .nav-cta:hover{background:var(--gold);color:var(--bg-void);}
+  .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;}
+  .burger span{width:24px;height:1.5px;background:var(--text-primary);transition:0.3s;}
+  .mobile-menu{
+    display:none;flex-direction:column;gap:0;
+    background:var(--bg-surface);border-top:1px solid var(--border-line);
+  }
+  .mobile-menu a{padding:16px 24px;border-bottom:1px solid var(--border-line);font-size:0.95rem;color:var(--text-secondary);}
+  .mobile-menu.open{display:flex;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+    position:relative;padding:120px 24px 60px;
+  }
+  .eyebrow{
+    color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:0.78rem;
+    letter-spacing:0.15em;text-transform:uppercase;margin-bottom:20px;
+    opacity:0;animation:fadeUp 0.8s ease forwards 0.2s;
+  }
+  .hero h1{
+    font-size:clamp(2.4rem,6vw,4.6rem);line-height:1.05;max-width:780px;
+    opacity:0;animation:fadeUp 0.9s ease forwards 0.4s;
+  }
+  .hero h1 em{color:var(--gold);font-style:normal;}
+  .hero p{
+    color:var(--text-secondary);max-width:480px;margin-top:24px;font-size:1.05rem;
+    opacity:0;animation:fadeUp 0.9s ease forwards 0.6s;
+  }
+  .hero-actions{
+    margin-top:36px;display:flex;gap:16px;flex-wrap:wrap;
+    opacity:0;animation:fadeUp 0.9s ease forwards 0.8s;
+  }
+  .btn-primary{
+    background:var(--gold);color:var(--bg-void);padding:14px 28px;font-size:0.9rem;
+    font-weight:500;transition:all 0.25s;border:1px solid var(--gold);
+  }
+  .btn-primary:hover{background:transparent;color:var(--gold);}
+  .btn-ghost{
+    border:1px solid var(--border-line);color:var(--text-primary);padding:14px 28px;font-size:0.9rem;
+    transition:all 0.25s;
+  }
+  .btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(16px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+
+  /* Route animation */
+  .route-wrap{
+    position:absolute;right:0;top:50%;transform:translateY(-50%);
+    width:46%;max-width:520px;opacity:0.9;
+  }
+  .route-path{
+    fill:none;stroke:var(--gold);stroke-width:1.5;
+    stroke-dasharray:900;stroke-dashoffset:900;
+    animation:draw 2.6s ease forwards 1s;
+  }
+  .route-dot{opacity:0;animation:popIn 0.4s ease forwards;}
+  .route-dot circle{fill:var(--bg-void);stroke:var(--gold);stroke-width:1.5;}
+  .route-dot.active circle{fill:var(--gold);}
+  @keyframes draw{to{stroke-dashoffset:0;}}
+  @keyframes popIn{to{opacity:1;}}
+
+  /* ---------- SECTION ---------- */
+  section{padding:110px 0;border-top:1px solid var(--border-line);}
+  .section-head{max-width:560px;margin-bottom:64px;}
+  .section-head .eyebrow{margin-bottom:14px;}
+  .section-head h2{font-size:clamp(1.8rem,3.5vw,2.6rem);}
+  .section-head p{color:var(--text-secondary);margin-top:16px;}
+
+  /* Services */
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border-line);border:1px solid var(--border-line);}
+  .card{
+    background:var(--bg-void);padding:40px 32px;transition:background 0.3s;
+    opacity:0;transform:translateY(24px);
+  }
+  .card.in-view{opacity:1;transform:translateY(0);transition:all 0.7s ease;}
+  .card:hover{background:var(--bg-surface);}
+  .card .num{font-family:'JetBrains Mono',monospace;color:var(--gold);font-size:0.85rem;}
+  .card h3{margin-top:18px;font-size:1.25rem;}
+  .card p{color:var(--text-secondary);margin-top:12px;font-size:0.92rem;}
+
+  /* How it works — numbered, real sequence */
+  .steps{display:flex;flex-direction:column;}
+  .step{
+    display:grid;grid-template-columns:80px 1fr;gap:24px;
+    padding:32px 0;border-bottom:1px solid var(--border-line);
+    opacity:0;transform:translateX(-16px);
+  }
+  .step.in-view{opacity:1;transform:translateX(0);transition:all 0.6s ease;}
+  .step:last-child{border-bottom:none;}
+  .step .step-num{font-family:'JetBrains Mono',monospace;color:var(--gold);font-size:1.4rem;}
+  .step h3{font-size:1.15rem;margin-bottom:6px;}
+  .step p{color:var(--text-secondary);font-size:0.92rem;max-width:520px;}
+  .step time{font-family:'JetBrains Mono',monospace;color:var(--text-muted);font-size:0.78rem;display:block;margin-top:8px;}
+
+  /* Pricing */
+  .pricing-card{
+    border:1px solid var(--gold);background:var(--bg-surface);
+    padding:48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;
+  }
+  .pricing-card .price{font-family:'Fraunces',serif;font-size:2.6rem;color:var(--gold);}
+  .pricing-card .price span{font-size:1rem;color:var(--text-secondary);font-family:'Inter',sans-serif;}
+
+  footer{border-top:1px solid var(--border-line);padding:48px 0;color:var(--text-muted);font-size:0.85rem;}
+  .footer-inner{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width:860px){
+    .route-wrap{display:none;}
+    .nav-links{display:none;}
+    .nav-cta{display:none;}
+    .burger{display:flex;}
+    .grid-3{grid-template-columns:1fr;}
+    .step{grid-template-columns:50px 1fr;}
+    .pricing-card{flex-direction:column;align-items:flex-start;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important;transition-duration:0.01ms !important;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo">CALVIR <span>&</span> CO.</div>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+    </div>
+    <a href="#pricing" class="nav-cta">Get started</a>
+    <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#services">Services</a>
+    <a href="#how">How it works</a>
+    <a href="#pricing">Pricing</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="wrap" style="width:100%;">
+    <div class="eyebrow mono">// Residential Valet Trash</div>
+    <h1>Your bin, <em>handled</em>.<br>Every night, without a thought.</h1>
+    <p>We collect from your door, you never touch a curb. Concierge-level trash and recycling pickup for apartment communities across Tbilisi.</p>
+    <div class="hero-actions">
+      <a href="#pricing" class="btn-primary">See pricing</a>
+      <a href="#how" class="btn-ghost">How it works</a>
+    </div>
+  </div>
+
+  <div class="route-wrap">
+    <svg viewBox="0 0 400 400" width="100%">
+      <path class="route-path" d="M60,340 C120,300 90,220 160,200 C230,180 210,100 280,70" />
+      <g class="route-dot" style="animation-delay:1.1s"><circle cx="60" cy="340" r="6"/></g>
+      <g class="route-dot" style="animation-delay:1.9s"><circle cx="160" cy="200" r="6"/></g>
+      <g class="route-dot active" style="animation-delay:3.4s"><circle cx="280" cy="70" r="7"/></g>
+    </svg>
+  </div>
+</section>
+
+<section id="services">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow mono">// Services</div>
+      <h2>Three ways we take it off your plate</h2>
+    </div>
+  </div>
+  <div class="grid-3">
+    <div class="card"><div class="num">01</div><h3>Nightly Valet Pickup</h3><p>Set your bin out, we collect it from your door after hours and return it emptied by morning.</p></div>
+    <div class="card"><div class="num">02</div><h3>Recycling Sort</h3><p>Separate recycling handled on its own schedule, no extra bins to manage yourself.</p></div>
+    <div class="card"><div class="num">03</div><h3>Building Accounts</h3><p>Property managers get one invoice and one contact for every unit on the property.</p></div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow mono">// How it works</div>
+      <h2>The nightly route</h2>
+      <p>The same four steps, every service night.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-num">01</div><div><h3>You set your bin out</h3><p>Leave it by your door before pickup window opens.</p><time>6:00 PM</time></div></div>
+      <div class="step"><div class="step-num">02</div><div><h3>We collect door to door</h3><p>Our team walks the property and picks up unit by unit.</p><time>8:00 – 10:00 PM</time></div></div>
+      <div class="step"><div class="step-num">03</div><div><h3>Sorted and hauled</h3><p>Trash and recycling are separated and taken to the correct facility.</p><time>10:00 PM – 12:00 AM</time></div></div>
+      <div class="step"><div class="step-num">04</div><div><h3>Bin returned, cleaned</h3><p>Your empty bin is back at your door before you wake up.</p><time>Before 7:00 AM</time></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow mono">// Pricing</div>
+      <h2>Simple, per-unit pricing</h2>
+    </div>
+    <div class="pricing-card">
+      <div>
+        <div class="price">$25 <span>/ unit / month</span></div>
+        <p style="color:var(--text-secondary);margin-top:10px;">Nightly pickup, recycling included. No contract minimums.</p>
+      </div>
+      <a href="#" class="btn-primary">Request a quote</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div>Calvir & Co. — Tbilisi, Georgia</div>
+    <div class="mono">hello@calvirco.com</div>
+  </div>
+</footer>
+
+<script>
+  const burger = document.getElementById('burger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  burger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('in-view'); });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.card, .step').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
